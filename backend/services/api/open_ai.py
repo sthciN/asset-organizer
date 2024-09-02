@@ -34,40 +34,28 @@ class OpenAiImageAnalyzerSimulator:
         if not image_bytes:
             raise ValueError("No Image Bytes provided")
 
-        # # Simulating the time delay that might occur while interacting with an actual API
-        # time.sleep(random.uniform(2, 6))
+        # Simulating the time delay that might occur while interacting with an actual API
+        time.sleep(random.uniform(2, 6))
 
-        # # Simulate occasional failure
-        # if random.random() < 0.2:
-        #     raise OpenAiError("Simulated API response error. Please try again later.")
-
-        # # Simulating the data that would be returned by the API, with random values
-        # analyzed_data = {
-        #     "quality": random.randint(1, 10),
-        #     "body_part": random.choice([True, False]),
-        #     "face": random.choice([True, False]),
-        #     "privacy": random.choice([True, False]),
-        #     "tattoo": random.choice([True, False]),
-        #     "overlay_text": random.choice([True, False]),
-        #     "brand": random.choice([True, False]),
-        #     "cloth": random.choice([True, False]),
-        # }
+        # Simulate occasional failure
+        if random.random() < 0.2:
+            raise OpenAiError("Simulated API response error. Please try again later.")
 
         # Simulating the data that would be returned by the API, with random values
         analyzed_data = {
-            "quality": 8,
+            "quality": random.randint(1, 10),
             "body_part": random.choice([True, False]),
             "face": random.choice([True, False]),
-            "privacy": True,
+            "privacy": random.choice([True, False]),
             "tattoo": random.choice([True, False]),
             "overlay_text": random.choice([True, False]),
             "brand": random.choice([True, False]),
             "cloth": random.choice([True, False]),
         }
 
-        # # Decide randomly whether to return a well-formed or malformed JSON
-        # if random.random() < 0.15:
-        #     return '{"quality": 8, "body_part": true, "face": true, "privacy": false,'
+        # Decide randomly whether to return a well-formed or malformed JSON
+        if random.random() < 0.15:
+            return '{"quality": 8, "body_part": true, "face": true, "privacy": false,'
 
         # Return the analyzed data as a proper JSON-formatted string
         return json.dumps(analyzed_data)

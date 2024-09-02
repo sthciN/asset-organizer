@@ -38,4 +38,9 @@ class GoogleAdsApiSimulator:
             "status": "SUCCESS",
         }
 
-        return simulated_response
+        return {
+                "error": {
+                    "code": 422,
+                    "message": "Unprocessable Entity. Budget must be a positive value.",
+                }
+            }

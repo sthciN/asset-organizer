@@ -2,7 +2,7 @@ import os
 import re
 import json
 from datetime import datetime
-from services.api.open_ai import OpenAiImageAnalyzerSimulator
+from services.api.image_quality import image_quality_check_openai
 from helper.utils import search_in_df
 from .utils import get_file_metrics_from_worksheet
 
@@ -85,21 +85,17 @@ class ValidFile:
             }
         
         ui_sorted = ui.sort_values(by='level')
-        result = [parent_dict.get(field) for field in ui_sorted['field']]
+        parents = [parent_dict.get(field) for field in ui_sorted['field']]
 
-        return result
+        return parents
 
     def quality_check(self, image_bytes: bytes) -> bool:
-        # TODO Error handling
-        api_key = os.environ['OPENAI_API_KEY']
-        response = OpenAiImageAnalyzerSimulator(api_key=api_key).analyze_image(image_bytes=image_bytes)
+        response = image_quality_check_openai(image_bytes)
         analyzed_data = json.loads(response)
         quality = analyzed_data.get('quality')
         privacy_compliance = analyzed_data.get('privacy')
         
         if quality < 5 or not privacy_compliance:
-            # TODO Error handling
-            # raise ValueError(f"Quality: {quality}, Privacy Compliance: {privacy_compliance}")
             return False
         
         return True

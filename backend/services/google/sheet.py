@@ -40,21 +40,21 @@ class GoogleWorksheet(GoogleSheet):
             worksheet = sheet.worksheet(worksheet_name)
         
         except:
-            worksheet = sheet.add_worksheet(title=worksheet_name, rows="100", cols="10")
+            worksheet = sheet.add_worksheet(title=worksheet_name, rows="1000", cols="10")
         
         return worksheet
     
     def append_row_into_worksheet(self, sheet, worksheet_name, data):
         sheet = self.gc.open_by_key(sheet.id)
         worksheet = sheet.worksheet(worksheet_name)
-        existing_data = self.worksheet_data(sheet, worksheet_name)
-        if data not in existing_data:
-            worksheet.append_row(data)
+        existing_data = self.worksheet_data(worksheet_name)
+        if existing_data[existing_data.columns[0]].str.contains(data[0]).any():
+            return None
+        
+        worksheet.append_row(data)
 
     def worksheet_data(self, worksheet_name):
         data = self.sheet.worksheet(worksheet_name).get_all_values()
         df = pd.DataFrame(data[1:], columns=data[0])
-        # df.apply(lambda col: pd.to_datetime(col, errors='coerce') if col.dtype == 'object' else col)
-        # values = pd.DataFrame(self.sheet.worksheet(worksheet_name).get_all_values())
+
         return df
-        return self.sheet.worksheet(worksheet_name).get_all_values()[1:]

@@ -1,4 +1,5 @@
 from app import app
+from fastapi import HTTPException
 from services.process.provider import png_provider
 
 
@@ -6,9 +7,16 @@ from services.process.provider import png_provider
 def read_root():
     return {"Healthcheck": "OK"}
 
-@app.get("/def-endpoint")
-def test_endpoint():
-    png_provider()
-    return 'ok'
-
+# TODO POST method
+@app.get("/process-pngs")
+def process_pngs():
+    try:
+        png_provider()
     
+    except HTTPException as error:
+        raise error
+    
+    except Exception as error:
+        raise HTTPException(status_code=500, detail=str(error))
+
+    return {"detail": {"message": "Success"}}

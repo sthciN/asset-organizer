@@ -1,4 +1,5 @@
-import os
+import logging
+from fastapi import HTTPException
 from .base import Google
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
@@ -42,8 +43,8 @@ class GoogleDrive(Google):
                     break
 
         except Exception as error:
-            print(f"An error occurred: {error}")
-            return []
+            logging.error(f"An error occurred: {error}")
+            raise HTTPException(status_code=502, detail="Failed to fetch data from Google Drive. Please try again later.")
 
         return file_list
 
@@ -55,8 +56,6 @@ class GoogleDrive(Google):
             'fileId': valid_file.file_id,
             'parents': parents
             }
-        
-        print('parent', parents)
         
         return new_file
 
