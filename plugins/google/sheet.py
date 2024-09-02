@@ -9,7 +9,7 @@ class GoogleSheet(Google):
 
     def create_sheet(self, folder_id, sheet_name):
         # Check if the sheet exists
-        drive = GoogleDrive(folder_id=folder_id)
+        drive = GoogleDrive()
         sheet = drive.fetch_file_in_given_folder(folder_id=folder_id, file_name=sheet_name)
         if sheet:
             return None

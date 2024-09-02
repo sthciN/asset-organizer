@@ -25,20 +25,17 @@ class GoogleDrive(Google):
         try:
             file_list = []
             page_token = None
+            query = f"'{folder_id}' in parents" #  and mimeType='image/png'
             
             while True:
-                response = (
-                    self.service.files()
-                    .list(
-                        q=f"'{folder_id}' in parents and mimeType='image/png'",
+                response = self.service.files().list(
+                        q=query,
                         spaces="drive",
                         # TODO nextPageToken doesn't work
                         fields="nextPageToken, files(id, name, size)",
                         pageToken=page_token,
-                    )
-                    .execute()
-                )
-                print('response', response)
+                    ).execute()
+
                 file_list.extend(response.get("files", []))
                 page_token = response.get("nextPageToken", None)
                 
@@ -59,7 +56,7 @@ class GoogleDrive(Google):
             'parents': valid_file.decode_file_parents(files_data, ui=ui)
             }
         
-        print('PARENT', valid_file.decode_file_parents(files_data, ui=ui))
+        print('parent', valid_file.decode_file_parents(files_data, ui=ui))
         
         return new_file
 
@@ -94,13 +91,6 @@ class GoogleDrive(Google):
             print(f"An error occurred: {error}")
 
     def create_nested_folder(self, folder_names, parent_id):
-        # check if the parent_id exists
-        query = f"'{parent_id}' in parents and mimeType='application/vnd.google-apps.folder'"
-        response = self.service.files().list(q=query).execute()
-        
-        if response.get('files'):
-            return response.get('files')[0].get('id')
-        
         for folder_name in folder_names:
             # Search for the folder in the parent folder
             query = f"'{parent_id}' in parents and mimeType='application/vnd.google-apps.folder' and name='{folder_name}'"
@@ -122,28 +112,47 @@ class GoogleDrive(Google):
 
         return parent_id
 
-    def png_exists_in_folder(self, name, parents):
+    def png_exists_in_folder(self, name, parents, current_folder_id):
         parent_ids = []
+        pid = current_folder_id
         for parent_name in parents:
-            query = f"name='{parent_name}' and mimeType='application/vnd.google-apps.folder'"
-            response = self.service.files().list(q=query).execute()
-            if response.get('files'):
-                parent_ids.append(response.get('files')[0].get('id'))
+            id = self.fetch_folder_id_by_name(parent_name, pid)
+            if id:
+                pid = id
+                parent_ids.append(id)
 
-        parent_queries = [f"'{parent_id}' in parents" for parent_id in parent_ids]
-        parents_query = ' or '.join(parent_queries)
-        query = f"name='{name}' and mimeType='image/png' and ({parents_query})"
+            else:
+                return False
+
+        query = f"'{pid}' in parents and name='{name}'"
         response = self.service.files().list(q=query).execute()
         if response.get('files'):
             return True
 
         return False
 
+    def search_png_in_folders(self, name, parents):
+        query = f"name='{parents[0]}' and mimeType='application/vnd.google-apps.folder'"
+        results = self.service.files().list(q=query, fields='files(id, name)').execute().get('files', [])
+
+        for result in results:
+            if result['name'] == parents[0]:
+                if len(parents) == 1:
+                    # If we're at the last folder, search for the file
+                    file_query = f"name='{name}' and parentId='{result['id']}' and mimeType='image/png'"
+                    response = self.service.files().list(q=file_query).execute().get('files', [])
+                    print('response', response)
+                    if response:
+                        return response[0]['id']
+                else:
+                    # Recursively search the next folder
+                    return self.search_png_in_folders(result['id'], parents[1:], name)
+
+        return None
+
     def png_exists_in_folder_id(self, name, parent_id):
-        print('name and parent id', name, parent_id)
         query = f"{parent_id} in parents and name='{name}'"
         response = self.service.files().list(q=query).execute()
-        print('response', response)
         if response.get('files'):
             print('file exists FINALLY')
             return True

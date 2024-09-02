@@ -33,7 +33,8 @@ class ValidFile:
         if not self.file_date:
             return False
         
-        if self.file_buyout_date < self.file_date:
+        # Check if the file buyout date is less than the file date or the current date
+        if self.file_buyout_date < self.file_date or self.file_buyout_date < datetime.now():
             return False
         
         return True
@@ -60,10 +61,12 @@ class ValidFile:
             return None
         
         return datetime.strptime(file_date, '%Y-%m-%d %H:%M:%S')
-    
+    # FR-FR _ P0020 _ HVF Seller _ Women _ Seller _ 16x9 _ 0s __1.91_1.png
+    # FR-FR | P0020 | HVF Seller | Women | Seller | 16x9 | 0s |_1.91:1.png
     def decode_file_parents(self, files_data, ui):
-        year = self.get_file_date(files_data).year
-        month = self.get_file_date(files_data).month
+        file_date = self.get_file_date(files_data)
+        year = file_date.year if file_date else None
+        month = file_date.month if file_date else None
         country = self.name_meta_list[0].split('-')[0].strip()
         language = self.name_meta_list[0].split('-')[1].strip()
         audience = self.name_meta_list[3].strip()
