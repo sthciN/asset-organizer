@@ -2,9 +2,8 @@ import os
 from .base import Google
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-from services.validation.transformer import resize_png
+from services.process.transformer import resize_png
 from googleapiclient.http import MediaIoBaseUpload
-from services.validation.media import open_image
 
 class GoogleDrive(Google):
     
