@@ -43,7 +43,7 @@ class GoogleDrive(Google):
                     break
 
         except Exception as error:
-            logging.error(f"An error occurred: {error}")
+            print(f"An error occurred: {error}")
             raise HTTPException(status_code=502, detail="Failed to fetch data from Google Drive. Please try again later.")
 
         return file_list
@@ -198,8 +198,7 @@ class GoogleDrive(Google):
 
         # Copy each file to the backup folder
         print('Copying file...')
-        # TODO remove the slicing
-        for file in file_list[:10]:
+        for file in file_list:
             backup_file = self.fetch_file_in_given_folder(file_name=file.get('name'), folder_id=backup_folder_id)
             if backup_file:
                 continue

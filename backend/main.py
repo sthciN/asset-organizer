@@ -1,5 +1,5 @@
 from app import app
-from fastapi import HTTPException
+from fastapi import HTTPException, BackgroundTasks
 from services.process.provider import png_provider
 
 
@@ -20,3 +20,9 @@ def process_pngs():
         raise HTTPException(status_code=500, detail=str(error))
 
     return {"detail": {"message": "Success"}}
+
+# TODO POST method
+@app.get("/process-pngs-background")
+async def process_pngs_background(file_path: str, background_tasks: BackgroundTasks):
+    background_tasks.add_task(png_provider, file_path)
+    return {"detail": {"message": "In progress"}}

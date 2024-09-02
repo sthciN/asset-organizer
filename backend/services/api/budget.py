@@ -19,13 +19,13 @@ def buyout_set_budget(asset_id, ad_id='ad_id', new_budget=1000.0):
                 error = result['error']
                 message = error['message']
                 code = error['code']
-                logging.error("Error: %s", message)
+                print("Error: %s", message)
                 raise HTTPException(detail=message, status_code=code)
 
             return None
         
         except HTTPException as http_excp:
-            logging.error(http_excp.response.detail)
+            print(http_excp.response.detail)
 
         except Exception:
             pass

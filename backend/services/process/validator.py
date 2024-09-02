@@ -22,8 +22,7 @@ class ValidFile:
         pattern = r'^[A-Z]{2,3}-[A-Z]{2} _ (D0000|P0020|0000|P0000|P0022|P0010|D0238|00000|P0009|P00010|D0858) _ [\w &-]+ _ \d+x\d+ _ \d+s _ ?'
         if not re.match(pattern, self.name):
             return False
-        
-        # TODO write the file name somewhere for reporting
+
         return True
     
     def validate_buyout(self, files_data, files_buyout_date):

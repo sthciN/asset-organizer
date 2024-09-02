@@ -1,9 +1,8 @@
 
 import os
+from datetime import datetime
 from fastapi import HTTPException
 from services.google.drive import GoogleDrive
-import multiprocessing
-from datetime import datetime
 from services.google.sheet import GoogleSheet, GoogleWorksheet
 from .processor import png_processor
 
@@ -18,32 +17,38 @@ def png_provider():
     
     drive = GoogleDrive()
     google_sheet = GoogleSheet()
+    google_worksheet = GoogleWorksheet()
+
     try:
         data_sheet = google_sheet.open_sheets(folder_id=data_folder_id, sheet_name=sheet_name)
-        google_worksheet = GoogleWorksheet(sheet=data_sheet)
-        ui = google_worksheet.worksheet_data(worksheet_name='UI')
-        files_data = google_worksheet.worksheet_data(worksheet_name='uac_assets_data')
-        ads_data = google_worksheet.worksheet_data(worksheet_name='uac_ads_data')
-        files_buyout_date = google_worksheet.worksheet_data(worksheet_name='buyouts_to_date')
-        log_sheet = google_sheet.open_sheets(folder_id=log_folder_id, sheet_name=f'Logs-{log_time}')
-        # TODO put hte backup_folder_id
-        # backup_folder_id = drive.backup_folder(parent_id=data_folder_id, shared_folder_id=png_folder_id)
-        file_list = drive.fetch_png_list(folder_id='1t2vEOwfBI6YwAfttJqHUkv_Vh6dhuwR-')
+        ui_ws = google_sheet.fetch_worksheet(sheet=data_sheet, worksheet_name='UI')
+        files_data_ws = google_sheet.fetch_worksheet(sheet=data_sheet, worksheet_name='uac_assets_data')
+        ads_data_ws = google_sheet.fetch_worksheet(sheet=data_sheet, worksheet_name='uac_ads_data')
+        files_buyout_date_ws = google_sheet.fetch_worksheet(sheet=data_sheet, worksheet_name='buyouts_to_date')
+        ui = google_worksheet.worksheet_data(worksheet=ui_ws)
+        files_data = google_worksheet.worksheet_data(worksheet=files_data_ws)
+        ads_data = google_worksheet.worksheet_data(worksheet=ads_data_ws)
+        files_buyout_date = google_worksheet.worksheet_data(files_buyout_date_ws)
+        log_sheet = google_sheet.create_sheet(folder_id=log_folder_id, sheet_name=f'Logs-{log_time}')
+        
+        backup_folder_id = drive.backup_folder(parent_id=data_folder_id, shared_folder_id=png_folder_id)
+        file_list = drive.fetch_png_list(folder_id=backup_folder_id)
+        print('len(file_list)', len(file_list))
     
     except HTTPException as error:
         raise error
 
-    for file in file_list[1:2]:
+    for file in file_list:
         try:
-            png_processor(file,
-                          drive,
-                          new_folder_id,
-                          ui,
-                          files_data,
-                          ads_data,
-                          files_buyout_date,
-                          google_sheet,
-                          log_sheet)
+            png_processor(file=file,
+                          drive=drive,
+                          new_folder_id=new_folder_id,
+                          ui=ui,
+                          files_data=files_data,
+                          ads_data=ads_data,
+                          files_buyout_date=files_buyout_date,
+                          google_sheet=google_sheet,
+                          log_sheet=log_sheet)
             print('='*50)
             print('='*50)
 
@@ -52,10 +57,3 @@ def png_provider():
             print('='*50)
             print('='*50)
             continue
-
-    # TODO Uncomment the code below
-    num_cpus = os.cpu_count()
-    # num_processes = num_cpus // 2
-    # with multiprocessing.Pool(processes=num_processes) as pool:
-    #     pool.starmap(png_processor, [(file, drive, new_folder_id, log_time) for file in file_list])
-    

@@ -13,10 +13,8 @@ class GoogleSheet(Google):
         # Check if the sheet exists
         drive = GoogleDrive()
         sheet = drive.fetch_file_in_given_folder(folder_id=folder_id, file_name=sheet_name)
-        if sheet:
-            return None
-
-        sheet = self.gc.create(title=sheet_name, folder_id=folder_id)
+        if not sheet:
+            sheet = self.gc.create(title=sheet_name, folder_id=folder_id)
 
         return sheet
 
@@ -25,12 +23,6 @@ class GoogleSheet(Google):
         sheet = self.gc.open(title=sheet_name, folder_id=folder_id)
         
         return sheet
-
-class GoogleWorksheet(GoogleSheet):
-
-    def __init__(self, sheet):
-        super().__init__()
-        self.sheet = sheet
     
     def create_worksheet(self, sheet, worksheet_name):
         sheet = self.gc.open_by_key(sheet.id)
@@ -44,17 +36,31 @@ class GoogleWorksheet(GoogleSheet):
         
         return worksheet
     
-    def append_row_into_worksheet(self, sheet, worksheet_name, data):
+    def fetch_worksheet(self, sheet, worksheet_name):
         sheet = self.gc.open_by_key(sheet.id)
         worksheet = sheet.worksheet(worksheet_name)
-        existing_data = self.worksheet_data(worksheet_name)
+        
+        if not worksheet:
+            return None
+        
+        return worksheet
+
+class GoogleWorksheet(GoogleSheet):
+
+    def __init__(self):
+        super().__init__()
+
+    def append_row_into_worksheet(self, worksheet, data):
+        existing_data = self.worksheet_data(worksheet)
+        
+        # The data is a list, however the app expects one row at a time
         if existing_data[existing_data.columns[0]].str.contains(data[0]).any():
             return None
         
         worksheet.append_row(data)
 
-    def worksheet_data(self, worksheet_name):
-        data = self.sheet.worksheet(worksheet_name).get_all_values()
+    def worksheet_data(self, worksheet):
+        data = worksheet.get_all_records()
         df = pd.DataFrame(data[1:], columns=data[0])
 
         return df

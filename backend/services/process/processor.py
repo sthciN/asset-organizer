@@ -1,4 +1,3 @@
-import logging
 from services.process.validator import ValidFile
 from services.api.budget import buyout_set_budget
 from helper.utils import search_in_df
@@ -24,7 +23,7 @@ def png_processor(file: dict,
     
     # Populate the new file
     new_file = drive.populate_new_file(valid_file, files_data, ui)
-    logging.info('new_file', new_file)
+    print('new_file', new_file)
 
     # Check if the file is not orphaned
     if None in new_file['parents']:
@@ -38,13 +37,13 @@ def png_processor(file: dict,
         log_into_sheet(google_sheet, log_sheet, worksheet_name, valid_file.name)
         raise Exception(worksheet_name)
     
-    logging.info('File name validation passed...')
+    print('File name validation passed...')
     
     is_file_exist = drive.png_exists_in_folder(name=valid_file.name, parents=new_file.get('parents'), current_folder_id=new_folder_id)
     if is_file_exist:
         raise Exception('Asset already exists...')
 
-    logging.info('Checking for existence passed...')
+    print('Checking for existence passed...')
 
     try:
         file_id = search_in_df(dataframe=files_data,
@@ -63,7 +62,7 @@ def png_processor(file: dict,
         worksheet_name = 'Asset Budget Update Failed'
         log_into_sheet(google_sheet, log_sheet, worksheet_name, valid_file.name)
     
-    logging.info('Buyout validation passed...')
+    print('Buyout validation passed...')
 
     try:
         file_content = drive.png_content(file_id=valid_file.file_id)
@@ -77,8 +76,8 @@ def png_processor(file: dict,
         log_into_sheet(google_sheet, log_sheet, worksheet_name, valid_file.name)
         raise Exception(worksheet_name)
 
-    logging.info('Quality check passed...')
-    logging.info(f'Moving file {valid_file.name}...')
+    print('Quality check passed...')
+    print(f'Moving file {valid_file.name}...')
 
     try:
         folder_id = drive.create_nested_folder(folder_names=new_file.get('parents'), parent_id=new_folder_id)
@@ -102,4 +101,4 @@ def png_processor(file: dict,
     #     google_sheet.create_worksheet(sheet=log_sheet, worksheet_name=worksheet_name)
     #     google_sheet.append_row_into_worksheet(sheet=log_sheet, worksheet_name=worksheet_name, data=[valid_file.name])
 
-    logging.info('Move completed...')
+    print('Move completed...')
