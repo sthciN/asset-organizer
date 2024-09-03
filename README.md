@@ -116,7 +116,7 @@ To avoid nested folder conflicts when levels change, update the NEW_FOLDER_ID in
 
 1. Setup Environment Variables
 
-Create a `.env` file with the following variables:
+Create a `.env` file within the backend folder with the following variables:
 ```
 PNG_FOLDER_ID: The ID of the folder where the original assets are located.
 DATA_FOLDER_ID: The ID of the folder where the Backup Folder and the data sheet (Vinted Homework.2) are located.
