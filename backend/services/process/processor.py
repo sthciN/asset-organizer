@@ -5,7 +5,7 @@ from helper.utils import search_in_df
 from services.process.media import open_image
 from services.sql_app.crud import update_budget
 from services.google.drive import GoogleDrive
-from services.google.sheet import GoogleSheet, GoogleWorksheet
+from services.google.sheet import GoogleSheet
 from services.log.logger import log_into_sheet
 from services.bids_budget.performance import calculate_performance_score, adjust_budget
 
