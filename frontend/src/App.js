@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import './App.css';
+import { FaSpinner } from 'react-icons/fa';
 
+import './App.css';
 function App() {
     const backendUrl = 'http://localhost:8000';
     const [status, setStatus] = useState('');
@@ -29,7 +30,7 @@ function App() {
             .then(data => {
                 console.log('Response:', typeof (data));
                 setDataList(data.detail);
-                setStatus('Fetch is done.');
+                setStatus('Completed');
             })
             .catch(error => {
                 console.error('Error fetching file list:', error);
@@ -38,7 +39,6 @@ function App() {
     };
 
     const startProcess = () => {
-        // Call the /api/process-pngs endpoint
         fetch(`${backendUrl}/api/process-pngs-background`, { method: 'POST' })
             .then(response => response.json())
             .then(data => {
@@ -48,7 +48,7 @@ function App() {
                 setIsStartButtonDisabled(true);
             })
             .catch(error => {
-                setStatus('Error accured. Please contact the admin...');
+                setStatus('Error occurred. Please contact the admin...');
                 console.error('Error starting process:', error);
             });
     };
@@ -73,66 +73,31 @@ function App() {
     useEffect(() => {
         if (status === 'Completed') {
             setIsStartButtonDisabled(false);
-            stopProcess(); // Stop polling when the process is completed
+            stopProcess();
         }
     }, [status]);
 
-    const containerStyle = {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100vh',
-        fontFamily: 'Arial, sans-serif',
-        backgroundColor: '#f0f0f0',
-        padding: '20px'
-    };
-
-    const buttonStyle = {
-        margin: '10px',
-        padding: '10px 20px',
-        fontSize: '16px',
-        cursor: 'pointer',
-        borderRadius: '5px',
-        border: 'none',
-        backgroundColor: '#007BFF',
-        color: 'white',
-        transition: 'background-color 0.3s',
-    };
-
-    const buttonDisabledStyle = {
-        ...buttonStyle,
-        backgroundColor: '#6c757d',
-        cursor: 'not-allowed',
-    };
-
-    const listStyle = {
-        overflowY: 'auto',
-        listStyleType: 'none',
-        padding: '0',
-    };
-    const listItemStyle = {
-        backgroundColor: 'white',
-        padding: '10px',
-        margin: '5px 0',
-        borderRadius: '5px',
-        boxShadow: '0 0 5px rgba(0,0,0,0.1)',
-    };
-
     return (
-        <div style={containerStyle}>
-            <h1>Status: {status}</h1>
-            <button
-                onClick={startProcess}
-                disabled={isStartButtonDisabled}
-                style={isStartButtonDisabled ? buttonDisabledStyle : buttonStyle}
-            >
-                Start the Process
-            </button>
-            <button onClick={fetchFileList} style={buttonStyle}>Fetch File List</button>
-            <ul style={listStyle}>
+        <div className="App">
+            <div className="box">
+                <h1>Status: {status}
+                    {status.toLowerCase().includes('in progress') && (
+                        <FaSpinner className="spinner" />
+                    )}
+                </h1>
+                <div className="button-container">
+                    <button
+                        onClick={startProcess}
+                        disabled={isStartButtonDisabled}
+                    >
+                        Start
+                    </button>
+                    <button onClick={fetchFileList}>Fetch File List</button>
+                </div>
+            </div>
+            <ul>
                 {dataList.map((item, index) => (
-                    <li key={index} style={listItemStyle}>{item}</li>
+                    <li key={index}>{item}</li>
                 ))}
             </ul>
         </div>
