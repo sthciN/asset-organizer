@@ -7,7 +7,6 @@ The project structure is as follows:
 ├── README.md
 ├── backend # The backend service
 │   ├── Dockerfile
-│   ├── README2.md
 │   ├── app
 │   │   └── __init__.py
 │   ├── credentials
