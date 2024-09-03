@@ -119,7 +119,7 @@ To avoid nested folder conflicts when levels change, update the NEW_FOLDER_ID in
 Create a `.env` file with the following variables:
 ```
 PNG_FOLDER_ID: The ID of the folder where the original assets are located.
-DATA_FOLDER_ID: The ID of the folder where the data sheet (Vinted Homework.2) is located.
+DATA_FOLDER_ID: The ID of the folder where the Backup Folder and the data sheet (Vinted Homework.2) are located.
 DATA_SHEET_NAME: The name of the Data sheet (Vinted Homework.2)
 NEW_FOLDER_ID: The ID of the new folder where files will be reorganized.
 LOG_FOLDER_ID: The ID of the folder where logs will be written.
@@ -169,8 +169,9 @@ After clicking on the `Start the Process`, a task starts in background in the ba
 
 ## Assumptions
 - File Naming and Asset Management: Instead of asset or asset_id, I used file and file_id across the app for clear and consistent naming.
-- Validations are assumed to be in order. The reason for this is because if the name is not validated, the next step will not be meaningful to be executed. Same with the buyout date which doesn't need to be checked for quality. However the unique name of the assets will be stored in the log files for future checking and see at what stage it is invalid.
-- The asset names do not relate to ad_id in uac_ads_data. Static ad_id are used for budget updates.
+- Validations are assumed to be in order. The reason for this is because if the name is not validated, the next step will not be meaningful to be executed. Same with the buyout date which doesn't need to be checked for quality. However, the unique name of the assets will be stored in the log files for future checking and see at what stage it is invalid.
+- The asset names do not relate to ad_id in uac_ads_data. Static ad_id is used for budget updates.
+- The `Backup Folder` will be created in the data folder next to the Vinted Homework.2 file.
 - Expiration Check: All files are checked based on their asset_production_date and current date.
 
 ## Future Improvements
