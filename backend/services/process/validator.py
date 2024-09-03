@@ -7,21 +7,21 @@ from services.api.image_quality import image_quality_check_openai
 from helper.utils import search_in_df
 from .utils import get_file_metrics_from_worksheet
 
-
 class ValidFile:
 
     def __init__(self, file):
         self.file = file
-        self.name = file.get('name')
+        self.name = file.get('name').replace('_', '|')
         self.size = file.get('size')
         self.file_id = file.get('id')
-        self.name_meta_list = self.name.split(' _ ')
+        self.name_meta_list = self.name.split(' | ')
         self.file_buyout_date = None
         self.file_date = None
 
     def validate_png_name(self):
-        pattern = r'^[A-Z]{2,3}-[A-Z]{2} _ (D0000|P0020|0000|P0000|P0022|P0010|D0238|00000|P0009|P00010|D0858) _ [\w &-]+ _ \d+x\d+ _ \d+s _ ?'
+        pattern = r'^[A-Z]{2,3}-[A-Z]{2} \| (D0000|P0020|0000|P0000|P0022|P0010|D0238|00000|P0009|P00010|D0858) \| [\w &-]+ \| [\w &-]+ \| [\w &-]+ \| [\w &-].+ \|?.png$'
         if not re.match(pattern, self.name):
+            print('????????????')
             return False
 
         return True
@@ -58,7 +58,7 @@ class ValidFile:
     def get_file_date(self, files_data):
         file_date = search_in_df(dataframe=files_data,
                                  search_column='asset_name',
-                                 search_value=self.name.replace('_', '|'),
+                                 search_value=self.name,
                                  return_column='asset_production_date')
 
         if not file_date:
@@ -102,6 +102,6 @@ class ValidFile:
         return True
 
     def get_file_performance_metrics(self, ads_data):
-        ad_id = get_file_metrics_from_worksheet(name=self.name.replace('_', '|'), worksheet_values=ads_data)
+        ad_id = get_file_metrics_from_worksheet(name=self.name, worksheet_values=ads_data)
         api_key = os.environ.get('GOOGLEADS_API_KEY')
         return calculate_performance_score(ad_id=ad_id, api_key=api_key)

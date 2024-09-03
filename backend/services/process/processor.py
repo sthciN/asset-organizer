@@ -33,10 +33,10 @@ def png_processor(file: dict,
         raise Exception(worksheet_name)
 
     # TODO Check the regex pattern
-    # if not valid_file.validate_png_name():
-    #     worksheet_name = 'Unmatched PNG Name'
-    #     log_into_sheet(google_sheet, log_sheet, worksheet_name, valid_file.name)
-    #     raise Exception(worksheet_name)
+    if not valid_file.validate_png_name():
+        worksheet_name = 'Unmatched PNG Name'
+        log_into_sheet(google_sheet, log_sheet, worksheet_name, valid_file.name)
+        raise Exception(worksheet_name)
     
     print('File name validation passed...')
     
@@ -47,13 +47,13 @@ def png_processor(file: dict,
     print('Checking for existence passed...')
 
     try:
+        worksheet_name = 'Asset Date Expired'
         file_id = search_in_df(dataframe=files_data,
                                search_column='asset_name',
-                               search_value=valid_file.name.replace('_', '|'),
+                               search_value=valid_file.name,
                                return_column='asset_id')
         
         if not valid_file.validate_buyout(files_data, files_buyout_date):
-            worksheet_name = 'Asset Date Expired'
             log_into_sheet(google_sheet, log_sheet, worksheet_name, valid_file.name)
             
             # Update budget to 0.0

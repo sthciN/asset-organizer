@@ -13,7 +13,7 @@ task_statuses = defaultdict(str)
 
 
 def png_provider(task_id: str):
-    task_statuses[task_id] = 'Processing assets in progress'
+    task_statuses[task_id] = 'In progress'
     png_folder_id = os.environ.get('PNG_FOLDER_ID')
     new_folder_id = os.environ.get('NEW_FOLDER_ID')
     data_folder_id = os.environ.get('DATA_FOLDER_ID')
@@ -26,6 +26,7 @@ def png_provider(task_id: str):
     google_worksheet = GoogleWorksheet()
 
     try:
+        # TODO uncomment
         # backup_folder_id = drive.backup_folder(parent_id=data_folder_id, shared_folder_id=png_folder_id)
         file_list = drive.fetch_png_list(folder_id='1t2vEOwfBI6YwAfttJqHUkv_Vh6dhuwR-')
         print('len(file_list)', len(file_list))
@@ -45,7 +46,7 @@ def png_provider(task_id: str):
     except HTTPException as error:
         raise error
     
-    for file in tqdm(file_list[:2]):
+    for file in tqdm(file_list[:10]):
         try:
             png_processor(file=file,
                           drive=drive,

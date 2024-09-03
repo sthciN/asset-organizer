@@ -3,7 +3,6 @@ import io
 
 def resize_png(image, max_size):
     try:
-        # Open the image and resize it
         original_width, original_height = image.size
         aspect_ratio = original_width / original_height
         new_width = int((max_size * aspect_ratio) ** 0.5)
@@ -13,7 +12,6 @@ def resize_png(image, max_size):
         image = image.resize((new_width, new_height))
         
         while True:
-            # Save the image to a BytesIO object
             image_bytes = io.BytesIO()
             image.save(image_bytes, format='PNG')
 
@@ -25,7 +23,6 @@ def resize_png(image, max_size):
             width, height = image.size
             image = image.resize((width - 15, height - 15))
 
-        # Update the position of the file to the beginning after streaming
         image_bytes.seek(0)
 
         return image_bytes
