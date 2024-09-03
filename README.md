@@ -1,5 +1,59 @@
 # Overview
-This project provides a robust solution for asset reorganization and processing using Python, Google APIs, and Docker. It integrates with Google Drive and Sheets to manage assets, performs validations, and processes images based on predefined criteria. The system is designed to handle large volumes of data efficiently and is built with scalability in mind.
+This project provides a solution for asset reorganization and processing.
+
+The project structure is as follows:
+
+```
+├── README.md
+├── backend # The backend service
+│   ├── Dockerfile
+│   ├── README2.md
+│   ├── app
+│   │   └── __init__.py # 
+│   ├── credentials
+│   │   └── service_account.json
+│   ├── helper
+│   │   └── utils.py
+│   ├── main.py
+│   ├── requirements.txt
+│   ├── services
+│   │   ├── api
+│   │   │   ├── budget.py
+│   │   │   ├── google_ads.py
+│   │   │   ├── image_quality.py
+│   │   │   └── open_ai.py
+│   │   ├── bids_budget
+│   │   │   └── performance.py
+│   │   ├── google
+│   │   │   ├── base.py # Authorizeation initialized.
+│   │   │   ├── drive.py # GoogleDrive object, its properties and methods
+│   │   │   └── sheet.py # GoogleSheet and GoogleWorksheet objects, their properties and methods
+│   │   ├── log
+│   │   │   └── logger.py # Logging into a Google sheet
+│   │   ├── process # The processing including the validations, quality check and resizing
+│   │   │   ├── media.py
+│   │   │   ├── processor.py
+│   │   │   ├── provider.py
+│   │   │   ├── transformer.py
+│   │   │   ├── utils.py
+│   │   │   └── validator.py
+│   │   └── sql_app # PostgreSQL
+│   │       ├── crud.py
+│   │       ├── database.py # Initialization
+│   │       ├── models.py
+│   │       └── schemas.py
+├── docker-compose.yml
+└── frontend # The frontend service
+    ├── Dockerfile
+    ├── package.json
+    ├── public
+    │   └── index.html
+    └── src
+        ├── App.css
+        ├── App.js
+        └── index.js
+```
+
 
 # Features
 ## Feature 1: Asset Reorganization
