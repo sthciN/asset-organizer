@@ -26,10 +26,10 @@ The project structure is as follows:
 │   │   ├── google
 │   │   │   ├── base.py # Authorizeation initialized.
 │   │   │   ├── drive.py # GoogleDrive object, its properties and methods
-│   │   │   └── sheet.py # GoogleSheet and GoogleWorksheet objects, their properties and methods
+│   │   │   └── sheet.py # GoogleSheet and GoogleWorksheet objects, their properties, and methods
 │   │   ├── log
 │   │   │   └── logger.py # Logging into a Google sheet
-│   │   ├── process # The processing including the validations, quality check and resizing
+│   │   ├── process # The processing including the validations, quality check, and resizing
 │   │   │   ├── media.py
 │   │   │   ├── processor.py
 │   │   │   ├── provider.py
@@ -57,18 +57,16 @@ The project structure is as follows:
 # Features
 ## Feature 1: Asset Reorganization
 1. Read Settings
+   
+    Note: To avoid nested folder conflicts when levels change, update the NEW_FOLDER_ID in the environment variables.
 
-The script reads settings from a Google Spreadsheet (UI tab).
-It reorganizes files on Google Drive based on the levels specified.
-To avoid nested folder conflicts when levels change, update the NEW_FOLDER_ID in the environment variables.
-
-2. Reorganize Assets
+3. Reorganize Assets
 
     1. Backup and Reorganization
         
         Each time the script runs, it keeps a backup of the homework_items Drive folder and reorganizes them in the folder with the id set as NEW_FOLDER_ID in the `.env`.
 
-    2. The script duplicates files to the new folder called `Backup Folder`, It creates this folder if it doesn't exist.
+    2. The script duplicates files to the new folder called `Backup Folder`, it creates this folder if it doesn't exist. This folder will lay down in the DATA_FOLDER_ID folder where the data sheet exists.
     3. Files with the same name are not duplicated; they are moved if needed.
     4. Assets fetched are .png files and resized to <100kb.
 
@@ -76,7 +74,7 @@ To avoid nested folder conflicts when levels change, update the NEW_FOLDER_ID in
 ### Validate Assets
 
 - Naming Validation: Assets are validated against a regex pattern.
-- Buyout Expiration Check: Expired assets are detected using their buyout code (referenced from the buyouts sheet). Their budget is set to zero using the mocked API, with retry logic (3 attempts with delay).
+- Buyout Expiration Check: Expired assets are detected using their buyout code. Their budget is set to zero using the mocked API, with retry logic (3 attempts with delay).
 - Quality Check: Images are analyzed using the mocked OpenAI API. Only images with quality > 5 and privacy_compliant: True proceed.
 
 
@@ -93,15 +91,13 @@ To avoid nested folder conflicts when levels change, update the NEW_FOLDER_ID in
                    (impressions / cost_micros * 1_000_000)
      ```
 - Budget Adjustment:
-    - Increase: Increase the budget of the top-performing asset within each ad by 20%.
-    - Decrease: Decrease the budget of low-performing assets within each ad by 20%.
-- Tracking Changes:
-    - All budget changes are tracked and stored in a PostgreSQL database for record-keeping and analysis.
-
+    - Top-performing assets are those with performance scores more than the avg performance of all the assets + 10% as the threshold. 
+    - Increase: Increase the budget by 20% in database and api.
+    - Decrease: Decrease the budget by 20% in database and api.
 
 ### Provide Feedback
 
-- Logging: Logs the names of the assets into a specified sheet named as Logs-{starting-process-datetime}, different worksheets made for validation failure in the LOG_FOLDER_ID.
+- Logging: Logs the names of the assets into a specified sheet named as `Logs-{starting-process-datetime}`, different worksheets made for validation failure in the LOG_FOLDER_ID.
     - The name of the worksheets are: 
         `Unmatched PNG Name`
         `Asset Date Expired`
@@ -134,7 +130,7 @@ POSTGRES_DB: The name of the PostgreSQL database.
 4. Access Frontend at `http://localhost:3000/`.
 
 ### Frontend
-After clicking on the `Start the Process`, a task starts in background in the backend service. It process all the assets in the PNG_FOLDER_ID. The fronend has a polling mechanism that requests the status of the task. If it becomes completed the `Start the Process` buttons will be enabled again for a fresh processing. Other wise user will see the processing is still in progress. The `Fetch File List` button is only for seeing the files in the PNG_FOLDER_ID.
+The `Fetch File List` button is only for seeing the files in the PNG_FOLDER_ID. After clicking on the `Start`, a task starts in the background in the backend service. It processes all the assets in the PNG_FOLDER_ID. The frontend has a polling mechanism that requests the status of the task. If it becomes completed the `Start` buttons will be enabled again for a fresh processing. Otherwise, the user will see the processing is still in progress. It's safe to process the files again and again. You can adjust the chunks of the files to be processed in the `provider.py` file.
 
 ### Technical Details
 - Backend: FastAPI that handles the processing task in background.
@@ -159,12 +155,13 @@ After clicking on the `Start the Process`, a task starts in background in the ba
 
 3. Add Creds
     Move the generated key to the credentials folder and rename it to `service_account.json`.
+4. Give the client email access to the folders and files set in the `.env` 
 
 
 ## Known Issues and Considerations
 - All the files in the `homework_item` will be processed and processing each file takes a long time.
 - Parallelism: Google Drive APIs do not handle parallelism well, leading to SSL and authorization errors in multithreading.
-- Validation Process: Validations are performed sequentially see [Assumptions](#assumptions). Future improvements could include parallel file processes.
+- Validation Process: Validations are performed sequentially (see [Assumptions](#assumptions)). Future improvements could include parallel __file__ processes.
 - Testing: Automated tests are necessary. The app should include unit, integration, and end-to-end tests to cover all functionalities.
 
 ## Assumptions
@@ -172,8 +169,7 @@ After clicking on the `Start the Process`, a task starts in background in the ba
 - Validations are assumed to be in order. The reason for this is because if the name is not validated, the next step will not be meaningful to be executed. Same with the buyout date which doesn't need to be checked for quality. However, the unique name of the assets will be stored in the log files for future checking and see at what stage it is invalid.
 - The asset names do not relate to ad_id in uac_ads_data. Static ad_id is used for budget updates.
 - The `Backup Folder` will be created in the data folder next to the Vinted Homework.2 file.
-- Expiration Check: All files are checked based on their asset_production_date and current date.
 
 ## Future Improvements
-- Logging Enhancements: Consider a separate threaded logging for improved performance.
-- Parallel Processing: Implement parallelism by using databases for logging and create a task queue for each file
+- Logging Enhancements: Considering a separate threaded logging for improved performance.
+- Parallel Processing: Implementing parallelism by using databases for logging and creating a task queue for each file
