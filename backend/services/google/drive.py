@@ -72,10 +72,7 @@ class GoogleDrive(Google):
             if file.get('size', 0) <= max_size:
                 self.service.files().copy(fileId=file.get('fileId'), body=new_file).execute()
 
-            # If the file is larger than the max size, resize it
             else:
-                # file_content = self.png_content(file_id=file.get('fileId'))
-                # image = open_image(file_content)
                 resized_image = resize_png(image=image, max_size=max_size)
                 media = MediaIoBaseUpload(resized_image, mimetype='image/png', resumable=True)
                 

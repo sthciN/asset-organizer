@@ -1,11 +1,10 @@
-import os
 import re
 import json
 import pandas as pd
 from datetime import datetime
 from services.api.image_quality import image_quality_check_openai
 from helper.utils import search_in_df
-from .utils import get_file_metrics_from_worksheet
+
 
 class ValidFile:
 
@@ -44,8 +43,8 @@ class ValidFile:
         if not self.file_date:
             return False
         
-        # Check if the file buyout date is less than the file date
-        if self.file_buyout_date < self.file_date:
+        # Check if the file buyout date is less than the file date or the current date
+        if self.file_buyout_date < self.file_date or self.file_buyout_date < datetime.now():
             return False
         
         return True
@@ -110,8 +109,3 @@ class ValidFile:
             return False
         
         return True
-
-    def get_file_performance_metrics(self, ads_data):
-        ad_id = get_file_metrics_from_worksheet(name=self.name, worksheet_values=ads_data)
-        api_key = os.environ.get('GOOGLEADS_API_KEY')
-        return calculate_performance_score(ad_id=ad_id, api_key=api_key)

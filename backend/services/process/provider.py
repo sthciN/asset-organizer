@@ -1,10 +1,10 @@
-
 import os
 from collections import defaultdict
 from datetime import datetime
 from fastapi import HTTPException
 from services.google.drive import GoogleDrive
 from services.google.sheet import GoogleSheet, GoogleWorksheet
+from services.sql_app.database import SessionLocal
 from .processor import png_processor
 from tqdm import tqdm
 
@@ -47,7 +47,9 @@ def png_provider(task_id: str):
     except HTTPException as error:
         raise error
     
-    for file in tqdm(file_list):
+    # TODO remove slicing
+    for file in tqdm(file_list[34:38]):
+        db = SessionLocal()
         try:
             png_processor(file=file,
                           drive=drive,
@@ -57,7 +59,8 @@ def png_provider(task_id: str):
                           ads_data=ads_data,
                           files_buyout_date=files_buyout_date,
                           google_sheet=google_sheet,
-                          log_sheet=log_sheet)
+                          log_sheet=log_sheet,
+                          db=db)
             print('='*50)
             print('='*50)
 

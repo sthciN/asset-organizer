@@ -1,18 +1,18 @@
-def calculate_performance_score(conversions,
-                                cost_per_conversion,
-                                all_conversions,
+def calculate_performance_score(all_conversions,
+                                conversions,
                                 cost_per_all_conversions,
+                                cost_per_conversion,
                                 clicks,
-                                cost_micros,
-                                impressions):
+                                impressions,
+                                cost_micros):
     
+    print('metrics', conversions, cost_per_conversion, all_conversions, cost_per_all_conversions, clicks, cost_micros, impressions)
     performance_score = (conversions / cost_per_conversion) + \
                         (all_conversions / cost_per_all_conversions) + \
                         (clicks / cost_micros * 1_000_000) + \
                         (impressions / cost_micros * 1_000_000)
     
-    print('metrics', conversions, cost_per_conversion, all_conversions, cost_per_all_conversions, clicks, cost_micros, impressions)
-    print('performance_score', performance_score)
+    print('performance_score::::', performance_score)
     return performance_score
 
 def adjust_budget(initial_budget, performance_score):
@@ -27,5 +27,4 @@ def adjust_budget(initial_budget, performance_score):
 
 def calculate_average_performance_score():
     # TODO Implement this function
-    return 1047
-    
+    return 3000214.0

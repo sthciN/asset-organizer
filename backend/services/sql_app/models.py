@@ -7,5 +7,5 @@ class PNGFileBudget(Base):
     __tablename__ = "png_file_budget"
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    file_id = Column(Integer, index=True)
+    file_id = Column(String, index=True)
     budget = Column(Float, index=True)

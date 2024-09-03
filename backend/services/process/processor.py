@@ -3,12 +3,12 @@ from services.process.validator import ValidFile
 from services.api.budget import buyout_set_budget_ok
 from helper.utils import search_in_df
 from services.process.media import open_image
-from services.sql_app.crud import update_budget
+from services.sql_app.crud import update_budget, get_budget, create_budget
 from services.google.drive import GoogleDrive
 from services.google.sheet import GoogleSheet
 from services.log.logger import log_into_sheet
 from services.bids_budget.performance import calculate_performance_score, adjust_budget
-
+from services.process.utils import get_file_metrics_from_worksheet
 
 def png_processor(file: dict,
                   drive: GoogleDrive,
@@ -18,7 +18,8 @@ def png_processor(file: dict,
                   ads_data: dict,
                   files_buyout_date: dict,
                   google_sheet: GoogleSheet,
-                  log_sheet: str) -> None:
+                  log_sheet: str,
+                  db) -> None:
     
     valid_file = ValidFile(file)
     
@@ -44,13 +45,14 @@ def png_processor(file: dict,
         raise Exception('Asset already exists...')
 
     print('Checking for existence passed...')
+    
+    file_id = search_in_df(dataframe=files_data,
+                            search_column='asset_name',
+                            search_value=valid_file.name,
+                            return_column='asset_id')
 
     try:
         worksheet_name = 'Asset Date Expired'
-        file_id = search_in_df(dataframe=files_data,
-                               search_column='asset_name',
-                               search_value=valid_file.name,
-                               return_column='asset_id')
         
         not_expired = valid_file.validate_buyout(files_data, files_buyout_date)
         if not not_expired:
@@ -101,17 +103,22 @@ def png_processor(file: dict,
         log_into_sheet(google_sheet, log_sheet, worksheet_name, valid_file.name)
         raise Exception(worksheet_name)
     
-    # try:
-    #     # TODO Find the current budget from sheet
-    #     budget = 1
+    # Performance
+    try:
+        metrics = get_file_metrics_from_worksheet(file_id=file_id, ads_data=ads_data)
+        budget = get_budget(db=db, file_id=str(file_id))
+        
+        performance_score = calculate_performance_score(*metrics)
+        if not budget:
+            new_budget = adjust_budget(initial_budget=1000, performance_score=performance_score)
+            create_budget(db=db, name=valid_file.name, file_id=str(file_id), budget=new_budget)
+        
+        else:
+            new_budget = adjust_budget(initial_budget=budget.budget, performance_score=performance_score)
+            update_budget(db=db, file_id=str(file_id), new_budget=new_budget)
 
-    #     performance_score = calculate_performance_score()
-    #     new_budget = adjust_budget(initial_budget=budget, performance_score=performance_score)
-    #     update_budget(file_id=file_id, new_budget=new_budget)
-
-    # except Exception as error:
-    #     worksheet_name = 'Asset Performance Budget Update Failed'
-    #     google_sheet.create_worksheet(sheet=log_sheet, worksheet_name=worksheet_name)
-    #     google_sheet.append_row_into_worksheet(sheet=log_sheet, worksheet_name=worksheet_name, data=[valid_file.name])
+    except:
+        worksheet_name = 'Asset Performance Budget Update Failed'
+        log_into_sheet(google_sheet, log_sheet, worksheet_name, valid_file.name)
 
     print('Move completed...')
