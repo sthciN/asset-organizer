@@ -127,7 +127,7 @@ function App() {
                 disabled={isStartButtonDisabled}
                 style={isStartButtonDisabled ? buttonDisabledStyle : buttonStyle}
             >
-                Start
+                Start the Process
             </button>
             <button onClick={fetchFileList} style={buttonStyle}>Fetch File List</button>
             <ul style={listStyle}>
