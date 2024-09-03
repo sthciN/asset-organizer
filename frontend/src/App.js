@@ -8,6 +8,7 @@ function App() {
     const [dataList, setDataList] = useState([]);
     const [intervalId, setIntervalId] = useState(null);
     const [isStartButtonDisabled, setIsStartButtonDisabled] = useState(false);
+    const [isFetchSuccessful, setIsFetchSuccessful] = useState(false);
     const [taskId, setTaskId] = useState(null);
 
     const fetchStatus = () => {
@@ -30,11 +31,13 @@ function App() {
             .then(data => {
                 console.log('Response:', typeof (data));
                 setDataList(data.detail);
-                setStatus('Completed');
+                setStatus('Fetch completed');
+                setIsFetchSuccessful(true);
             })
             .catch(error => {
                 console.error('Error fetching file list:', error);
                 setDataList([]);
+                setIsFetchSuccessful(false);
             });
     };
 
@@ -86,13 +89,16 @@ function App() {
                     )}
                 </h1>
                 <div className="button-container">
-                    <button
-                        onClick={startProcess}
-                        disabled={isStartButtonDisabled}
-                    >
-                        Start
-                    </button>
-                    <button onClick={fetchFileList}>Fetch File List</button>
+                    {!isFetchSuccessful ? (
+                        <button onClick={fetchFileList}>Fetch File List</button>
+                    ) : (
+                        <button
+                            onClick={startProcess}
+                            disabled={isStartButtonDisabled}
+                        >
+                            Start
+                        </button>
+                    )}
                 </div>
             </div>
             <ul>
