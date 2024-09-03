@@ -1,0 +1,20 @@
+.App {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.status-display, .static-data {
+    margin: 20px 0;
+}
+
+h2 {
+    color: #bd1a97;
+}
