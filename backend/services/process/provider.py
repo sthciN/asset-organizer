@@ -1,12 +1,19 @@
 
 import os
+from collections import defaultdict
 from datetime import datetime
 from fastapi import HTTPException
 from services.google.drive import GoogleDrive
 from services.google.sheet import GoogleSheet, GoogleWorksheet
 from .processor import png_processor
+from tqdm import tqdm
 
-def png_provider():
+
+task_statuses = defaultdict(str)
+
+
+def png_provider(task_id: str):
+    task_statuses[task_id] = 'Processing assets in progress'
     png_folder_id = os.environ.get('PNG_FOLDER_ID')
     new_folder_id = os.environ.get('NEW_FOLDER_ID')
     data_folder_id = os.environ.get('DATA_FOLDER_ID')
@@ -38,7 +45,7 @@ def png_provider():
     except HTTPException as error:
         raise error
     
-    for file in file_list[:3]:
+    for file in tqdm(file_list[:2]):
         try:
             png_processor(file=file,
                           drive=drive,
@@ -57,5 +64,7 @@ def png_provider():
             print('='*50)
             print('='*50)
             continue
+
+    task_statuses[task_id] = 'Completed'
 
     return None
