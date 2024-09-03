@@ -1,7 +1,5 @@
 import os
 import time
-import json
-import logging
 from services.api.open_ai import OpenAiImageAnalyzerSimulator
 from fastapi import HTTPException
 
@@ -33,5 +31,5 @@ def image_quality_check_openai(image_bytes: bytes):
             pass
 
         time.sleep(retry_delay)
-
+    
     raise Exception("Failed to check quality after %s attempts", max_retries)

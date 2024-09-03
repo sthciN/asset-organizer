@@ -40,13 +40,14 @@ def png_provider(task_id: str):
         files_data = google_worksheet.worksheet_data(worksheet=files_data_ws)
         ads_data = google_worksheet.worksheet_data(worksheet=ads_data_ws)
         files_buyout_date = google_worksheet.worksheet_data(files_buyout_date_ws)
+        files_buyout_date['buyout_code'] = files_buyout_date['buyout_code'].astype('string')
         log_sheet = google_sheet.create_sheet(folder_id=log_folder_id, sheet_name=f'Logs-{log_time}')
         
     
     except HTTPException as error:
         raise error
     
-    for file in tqdm(file_list[:10]):
+    for file in tqdm(file_list):
         try:
             png_processor(file=file,
                           drive=drive,

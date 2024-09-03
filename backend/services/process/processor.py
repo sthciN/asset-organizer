@@ -32,7 +32,6 @@ def png_processor(file: dict,
         log_into_sheet(google_sheet, log_sheet, worksheet_name, valid_file.name)
         raise Exception(worksheet_name)
 
-    # TODO Check the regex pattern
     if not valid_file.validate_png_name():
         worksheet_name = 'Unmatched PNG Name'
         log_into_sheet(google_sheet, log_sheet, worksheet_name, valid_file.name)
@@ -53,7 +52,8 @@ def png_processor(file: dict,
                                search_value=valid_file.name,
                                return_column='asset_id')
         
-        if not valid_file.validate_buyout(files_data, files_buyout_date):
+        not_expired = valid_file.validate_buyout(files_data, files_buyout_date)
+        if not not_expired:
             log_into_sheet(google_sheet, log_sheet, worksheet_name, valid_file.name)
             
             # Update budget to 0.0
@@ -72,6 +72,7 @@ def png_processor(file: dict,
             raise Exception(worksheet_name)
     
     except:
+        log_into_sheet(google_sheet, log_sheet, worksheet_name, valid_file.name)
         raise Exception(worksheet_name) 
     
     print('Buyout validation passed...')

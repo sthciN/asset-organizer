@@ -14,14 +14,23 @@ class ValidFile:
         self.name = file.get('name').replace('_', '|')
         self.size = file.get('size')
         self.file_id = file.get('id')
-        self.name_meta_list = self.name.split(' | ')
+        self.name_meta_list = self.get_name_metadata()
         self.file_buyout_date = None
         self.file_date = None
 
+    def get_name_metadata(self):
+        md = self.name.split(' | ')
+        
+        # The 0000 and 00000 act like 0 when reading from sheet
+        buyout = md[1]
+        if buyout == '0000' or buyout == '00000':
+            md[1] = '0'
+        
+        return md
+
     def validate_png_name(self):
-        pattern = r'^[A-Z]{2,3}-[A-Z]{2} \| (D0000|P0020|0000|P0000|P0022|P0010|D0238|00000|P0009|P00010|D0858) \| [\w &-]+ \| [\w &-]+ \| [\w &-]+ \| [\w &-].+ \|?.png$'
+        pattern = r'^[A-Z]{2,3}-[A-Z]{2} \| (D0000|P0020|0000|P0000|P0022|P0010|D0238|00000|P0009|P00010|D0858) \| [\w &-]+ \| [\w &-]+ \| [\w &-]+ \| [\w &-].+.png$'
         if not re.match(pattern, self.name):
-            print('????????????')
             return False
 
         return True
@@ -35,8 +44,8 @@ class ValidFile:
         if not self.file_date:
             return False
         
-        # Check if the file buyout date is less than the file date or the current date
-        if self.file_buyout_date < self.file_date or self.file_buyout_date < datetime.now():
+        # Check if the file buyout date is less than the file date
+        if self.file_buyout_date < self.file_date:
             return False
         
         return True
@@ -95,6 +104,7 @@ class ValidFile:
         analyzed_data = json.loads(response)
         quality = analyzed_data.get('quality')
         privacy_compliance = analyzed_data.get('privacy')
+        print('quality, privacy_compliance', quality, privacy_compliance)
         
         if quality < 5 or not privacy_compliance:
             return False
