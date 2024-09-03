@@ -27,9 +27,36 @@ To avoid nested folder conflicts when levels change, update the NEW_FOLDER_ID in
 - Quality Check: Images are analyzed using the mocked OpenAI API. Only images with quality > 5 and privacy_compliant: True proceed.
 
 
+## Feature 3: Ads Budget Management
+
+### Update Budgets Based on Asset Performance**
+- Every time the script runs, it uses the mocked API provided to update budgets based on asset performance.
+- Performance Calculation:
+
+     ```python
+     performance = (conversions / cost_per_conversion) + \
+                   (all_conversions / cost_per_all_conversions) + \
+                   (clicks / cost_micros * 1_000_000) + \
+                   (impressions / cost_micros * 1_000_000)
+     ```
+- Budget Adjustment:
+    - Increase: Increase the budget of the top-performing asset within each ad by 20%.
+    - Decrease: Decrease the budget of low-performing assets within each ad by 20%.
+- Tracking Changes:
+    - All budget changes are tracked and stored in a PostgreSQL database for record-keeping and analysis.
+
+
 ### Provide Feedback
 
 - Logging: Logs the names of the assets into a specified sheet named as Logs-{starting-process-datetime}, different worksheets made for validation failure in the LOG_FOLDER_ID.
+    - The name of the worksheets are: 
+        `Unmatched PNG Name`
+        `Asset Date Expired`
+        `Asset Budget Update Failed`
+        `Asset Budget Update Failed`
+        `Asset Quality Check Failed`
+        `Asset Move Failed`
+        `Asset Performance Budget Update Failed`
 - Error Handling: New logs are created for each run, allowing for tracking of file processing status.
 
 ## Deployment
@@ -82,13 +109,15 @@ After clicking on the `Start the Process`, a task starts in background in the ba
 
 
 ## Known Issues and Considerations
-- Parallelism: Google Drive APIs do not handle parallelism well, leading to SSL and authorization errors in multithreading. To address this, consider using a database with ACID properties for parallelism support.
-- Validation Process: Validations are performed sequentially. Future improvements could include parallel validation processes.
+- All the files in the `homework_item` will be processed and processing each file takes a long time.
+- Parallelism: Google Drive APIs do not handle parallelism well, leading to SSL and authorization errors in multithreading.
+- Validation Process: Validations are performed sequentially see [Assumptions](#assumptions). Future improvements could include parallel file processes.
 
 ## Assumptions
-- File Naming and Asset Management: Instead of asset or asset_id, I used file and file_id across the app for clear and consistent naming. 
+- File Naming and Asset Management: Instead of asset or asset_id, I used file and file_id across the app for clear and consistent naming.
+- Validations are assumed to be in order. The reason for this is because if the name is not validated, the next step will not be meaningful to be executed. Same with the buyout date which doesn't need to be checked for quality. However the unique name of the assets will be stored in the log files for future checking and see at what stage it is invalid.
 - The asset names do not relate to ad_id in uac_ads_data. Static ad_id are used for budget updates.
-- Expiration Check: Files with D0000 are considered expired if the current date is beyond 02/09/2024.
+- Expiration Check: All files are checked based on their asset_production_date and current date.
 - Validation Order: Validations are assumed to occur in sequence and are not parallelized.
 
 ## Future Improvements
