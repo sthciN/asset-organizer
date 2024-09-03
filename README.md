@@ -9,7 +9,7 @@ The project structure is as follows:
 │   ├── Dockerfile
 │   ├── README2.md
 │   ├── app
-│   │   └── __init__.py # 
+│   │   └── __init__.py
 │   ├── credentials
 │   │   └── service_account.json
 │   ├── helper
