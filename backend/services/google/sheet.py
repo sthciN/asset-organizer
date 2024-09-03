@@ -60,7 +60,5 @@ class GoogleWorksheet(GoogleSheet):
         worksheet.append_row(data)
 
     def worksheet_data(self, worksheet):
-        data = worksheet.get_all_records()
-        df = pd.DataFrame(data[1:], columns=data[0])
-
+        df = pd.DataFrame(worksheet.get_all_records())
         return df

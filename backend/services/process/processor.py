@@ -1,10 +1,11 @@
+from multiprocessing import Queue
 from services.process.validator import ValidFile
-from services.api.budget import buyout_set_budget
+from services.api.budget import buyout_set_budget_ok
 from helper.utils import search_in_df
 from services.process.media import open_image
 from services.sql_app.crud import update_budget
 from services.google.drive import GoogleDrive
-from services.google.sheet import GoogleSheet
+from services.google.sheet import GoogleSheet, GoogleWorksheet
 from services.log.logger import log_into_sheet
 from services.bids_budget.performance import calculate_performance_score, adjust_budget
 
@@ -32,10 +33,10 @@ def png_processor(file: dict,
         raise Exception(worksheet_name)
 
     # TODO Check the regex pattern
-    if not valid_file.validate_png_name():
-        worksheet_name = 'Unmatched PNG Name'
-        log_into_sheet(google_sheet, log_sheet, worksheet_name, valid_file.name)
-        raise Exception(worksheet_name)
+    # if not valid_file.validate_png_name():
+    #     worksheet_name = 'Unmatched PNG Name'
+    #     log_into_sheet(google_sheet, log_sheet, worksheet_name, valid_file.name)
+    #     raise Exception(worksheet_name)
     
     print('File name validation passed...')
     
@@ -50,17 +51,28 @@ def png_processor(file: dict,
                                search_column='asset_name',
                                search_value=valid_file.name.replace('_', '|'),
                                return_column='asset_id')
-
+        
         if not valid_file.validate_buyout(files_data, files_buyout_date):
             worksheet_name = 'Asset Date Expired'
             log_into_sheet(google_sheet, log_sheet, worksheet_name, valid_file.name)
-            ad_id = search_in_df(dataframe=ads_data, search_column='asset_id', search_value=file_id, return_column='ad_id')
-            buyout_set_budget(asset_id=file_id, ad_id=ad_id, new_budget=0.0)
+            
+            # Update budget to 0.0
+            try:
+                # TODO ad_id should come from the sheet using search_in_df(), however the current data sheet is not updated
+                ad_id = 3423856768
+                budget_updated = buyout_set_budget_ok(asset_id=file_id, ad_id=ad_id, new_budget=0.0)
+                if not budget_updated:
+                    worksheet_name = 'Asset Budget Update Failed'
+                    log_into_sheet(google_sheet, log_sheet, worksheet_name, valid_file.name)
+            
+            except:
+                worksheet_name = 'Asset Budget Update Failed'
+                log_into_sheet(google_sheet, log_sheet, worksheet_name, valid_file.name)
+
             raise Exception(worksheet_name)
     
     except:
-        worksheet_name = 'Asset Budget Update Failed'
-        log_into_sheet(google_sheet, log_sheet, worksheet_name, valid_file.name)
+        raise Exception(worksheet_name) 
     
     print('Buyout validation passed...')
 

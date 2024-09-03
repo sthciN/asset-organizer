@@ -1,6 +1,7 @@
 import os
 import re
 import json
+import pandas as pd
 from datetime import datetime
 from services.api.image_quality import image_quality_check_openai
 from helper.utils import search_in_df
@@ -82,7 +83,8 @@ class ValidFile:
             'month': month,
             'transaction_side': transaction_side
             }
-        
+
+        ui['level'] = pd.Categorical(ui['level'], categories=['level_0', 'level_1', 'level_2', 'level_3'], ordered=True)
         ui_sorted = ui.sort_values(by='level')
         parents = [parent_dict.get(field) for field in ui_sorted['field']]
 

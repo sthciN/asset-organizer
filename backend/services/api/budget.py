@@ -5,7 +5,7 @@ from services.api.google_ads import GoogleAdsApiSimulator
 from fastapi import HTTPException
 
 
-def buyout_set_budget(asset_id, ad_id='ad_id', new_budget=1000.0):
+def buyout_set_budget_ok(asset_id, ad_id='ad_id', new_budget=1000.0):
     api_key = os.environ.get('GOOGLEADS_API_KEY')
     max_retries=3
     retry_delay=2
@@ -13,23 +13,31 @@ def buyout_set_budget(asset_id, ad_id='ad_id', new_budget=1000.0):
     
     for _attempt in range(max_retries):
         try:
+            print(1)
             result = google_ads_api.update_asset_budget(ad_id=ad_id, asset_id=asset_id, new_budget=new_budget)
-            
+
             if 'error' in result:
+                print(2)
                 error = result['error']
                 message = error['message']
                 code = error['code']
-                print("Error: %s", message)
+                print(3)
                 raise HTTPException(detail=message, status_code=code)
 
-            return None
+            print(7)
+            return True
         
         except HTTPException as http_excp:
+            print(3.5)
             print(http_excp.response.detail)
+            pass
 
         except Exception:
+            print(4)
             pass
 
         time.sleep(retry_delay)
+        print(5)
 
-    raise Exception("Failed to update budget after %s attempts", max_retries)
+    print(6)
+    return False

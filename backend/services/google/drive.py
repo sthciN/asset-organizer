@@ -49,7 +49,7 @@ class GoogleDrive(Google):
         return file_list
 
     def populate_new_file(self, valid_file, files_data, ui):
-        parents = valid_file.decode_file_parents(files_data, ui=ui)
+        parents = valid_file.decode_file_parents(files_data=files_data, ui=ui)
         new_file = {
             'name': valid_file.name,
             'size': int(valid_file.size),
@@ -166,7 +166,9 @@ class GoogleDrive(Google):
         return None
 
     def backup_folder(self, parent_id, shared_folder_id):
+        # TODO get from env
         name = 'Backup Folder'
+        
         # Check if the backup folder exists
         backup_folder_id = self.fetch_folder_id_by_name(name, parent_id)
         if not backup_folder_id:
@@ -183,6 +185,7 @@ class GoogleDrive(Google):
         file_list = []
         page_token = None
         while True:
+            print('page_token', page_token)
             query = f"'{shared_folder_id}' in parents"
             response = self.service.files().list(
                 q=query,
