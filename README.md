@@ -166,13 +166,13 @@ After clicking on the `Start the Process`, a task starts in background in the ba
 - All the files in the `homework_item` will be processed and processing each file takes a long time.
 - Parallelism: Google Drive APIs do not handle parallelism well, leading to SSL and authorization errors in multithreading.
 - Validation Process: Validations are performed sequentially see [Assumptions](#assumptions). Future improvements could include parallel file processes.
+- Testing: Automated tests are necessary. The app should include unit, integration, and end-to-end tests to cover all functionalities.
 
 ## Assumptions
 - File Naming and Asset Management: Instead of asset or asset_id, I used file and file_id across the app for clear and consistent naming.
 - Validations are assumed to be in order. The reason for this is because if the name is not validated, the next step will not be meaningful to be executed. Same with the buyout date which doesn't need to be checked for quality. However the unique name of the assets will be stored in the log files for future checking and see at what stage it is invalid.
 - The asset names do not relate to ad_id in uac_ads_data. Static ad_id are used for budget updates.
 - Expiration Check: All files are checked based on their asset_production_date and current date.
-- Validation Order: Validations are assumed to occur in sequence and are not parallelized.
 
 ## Future Improvements
 - Logging Enhancements: Consider a separate threaded logging for improved performance.
