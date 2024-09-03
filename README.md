@@ -86,11 +86,11 @@ After clicking on the `Start the Process`, a task starts in background in the ba
 - Validation Process: Validations are performed sequentially. Future improvements could include parallel validation processes.
 
 ## Assumptions
-- File Naming and Asset Management: Instead of asset or asset_id, I used file and file_id across the app for clear and consistent across the app. 
+- File Naming and Asset Management: Instead of asset or asset_id, I used file and file_id across the app for clear and consistent naming. 
 - The asset names do not relate to ad_id in uac_ads_data. Static ad_id are used for budget updates.
 - Expiration Check: Files with D0000 are considered expired if the current date is beyond 02/09/2024.
 - Validation Order: Validations are assumed to occur in sequence and are not parallelized.
 
 ## Future Improvements
-- Logging Enhancements: Consider single-threaded logging for improved performance.
-- Parallel Processing: Implement parallelism by using databases that support it while maintaining ACID properties.
+- Logging Enhancements: Consider a separate threaded logging for improved performance.
+- Parallel Processing: Implement parallelism by using databases for logging and create a task queue for each file
