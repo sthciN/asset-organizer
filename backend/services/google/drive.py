@@ -31,7 +31,6 @@ class GoogleDrive(Google):
                 response = self.service.files().list(
                         q=query,
                         spaces="drive",
-                        # TODO nextPageToken doesn't work
                         fields="nextPageToken, files(id, name, size)",
                         pageToken=page_token,
                     ).execute()
@@ -163,7 +162,6 @@ class GoogleDrive(Google):
         return None
 
     def backup_folder(self, parent_id, shared_folder_id):
-        # TODO get from env
         name = 'Backup Folder'
         
         # Check if the backup folder exists

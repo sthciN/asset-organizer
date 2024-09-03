@@ -5,7 +5,7 @@ from services.api.google_ads import GoogleAdsApiSimulator
 from fastapi import HTTPException
 
 
-def buyout_set_budget_ok(asset_id, ad_id='ad_id', new_budget=1000.0):
+def buyout_set_budget(asset_id, ad_id='ad_id', new_budget=1000.0):
     api_key = os.environ.get('GOOGLEADS_API_KEY')
     max_retries=3
     retry_delay=2

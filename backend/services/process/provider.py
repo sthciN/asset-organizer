@@ -26,9 +26,8 @@ def png_provider(task_id: str):
     google_worksheet = GoogleWorksheet()
 
     try:
-        # TODO uncomment
-        # backup_folder_id = drive.backup_folder(parent_id=data_folder_id, shared_folder_id=png_folder_id)
-        file_list = drive.fetch_png_list(folder_id='1t2vEOwfBI6YwAfttJqHUkv_Vh6dhuwR-')
+        backup_folder_id = drive.backup_folder(parent_id=data_folder_id, shared_folder_id=png_folder_id)
+        file_list = drive.fetch_png_list(folder_id=backup_folder_id)
         print('len(file_list)', len(file_list))
         
         data_sheet = google_sheet.open_sheets(folder_id=data_folder_id, sheet_name=sheet_name)
@@ -47,8 +46,7 @@ def png_provider(task_id: str):
     except HTTPException as error:
         raise error
     
-    # TODO remove slicing
-    for file in tqdm(file_list[34:38]):
+    for file in tqdm(file_list):
         db = SessionLocal()
         try:
             png_processor(file=file,

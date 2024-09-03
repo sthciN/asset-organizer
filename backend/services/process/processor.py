@@ -1,6 +1,6 @@
 from multiprocessing import Queue
 from services.process.validator import ValidFile
-from services.api.budget import buyout_set_budget_ok
+from services.api.budget import buyout_set_budget
 from helper.utils import search_in_df
 from services.process.media import open_image
 from services.sql_app.crud import update_budget, get_budget, create_budget
@@ -62,7 +62,7 @@ def png_processor(file: dict,
             try:
                 # TODO ad_id should come from the sheet using search_in_df(), however the current data sheet is not updated
                 ad_id = 3423856768
-                budget_updated = buyout_set_budget_ok(asset_id=file_id, ad_id=ad_id, new_budget=0.0)
+                budget_updated = buyout_set_budget(asset_id=file_id, ad_id=ad_id, new_budget=0.0)
                 if not budget_updated:
                     worksheet_name = 'Asset Budget Update Failed'
                     log_into_sheet(google_sheet, log_sheet, worksheet_name, valid_file.name)
@@ -116,6 +116,9 @@ def png_processor(file: dict,
         else:
             new_budget = adjust_budget(initial_budget=budget.budget, performance_score=performance_score)
             update_budget(db=db, file_id=str(file_id), new_budget=new_budget)
+
+        # TODO ad_id should come from the sheet using search_in_df(), however the current data sheet is not updated
+        buyout_set_budget(asset_id=file_id, ad_id=3423856768, new_budget=new_budget)
 
     except:
         worksheet_name = 'Asset Performance Budget Update Failed'
