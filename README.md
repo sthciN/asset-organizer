@@ -142,6 +142,7 @@ The `Fetch File List` button is only for seeing the files in the PNG_FOLDER_ID. 
     - `google-api-python-client` for Google Drive
     - `gspread` for Google Sheets
     - `pandas` for data manipulation
+    - `SQLAlchemy` for ORM
 
 ### Google API Setup
 
@@ -155,7 +156,7 @@ The `Fetch File List` button is only for seeing the files in the PNG_FOLDER_ID. 
 
 3. Add Creds
     Move the generated key to the credentials folder and rename it to `service_account.json`.
-4. Give the client email access to the folders and files set in the `.env` 
+4. Give the client email access to the folders and files that have been set in the `.env`.
 
 
 ## Known Issues and Considerations
@@ -167,7 +168,7 @@ The `Fetch File List` button is only for seeing the files in the PNG_FOLDER_ID. 
 ## Assumptions
 - File Naming and Asset Management: Instead of asset or asset_id, I used file and file_id across the app for clear and consistent naming.
 - Validations are assumed to be in order. The reason for this is because if the name is not validated, the next step will not be meaningful to be executed. Same with the buyout date which doesn't need to be checked for quality. However, the unique name of the assets will be stored in the log files for future checking and see at what stage it is invalid.
-- The asset names do not relate to ad_id in uac_ads_data. Static ad_id is used for budget updates.
+- The asset names do not relate to ad_id in uac_ads_data. Static but random ad_id is used for budget updates.
 - The `Backup Folder` will be created in the data folder next to the Vinted Homework.2 file.
 
 ## Future Improvements
