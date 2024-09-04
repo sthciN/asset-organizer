@@ -125,10 +125,10 @@ POSTGRES_USER: The PostgreSQL username.
 POSTGRES_PASSWORD: The PostgreSQL password
 POSTGRES_DB: The name of the PostgreSQL database.
 ```
-3. Add the POSTGRES_USER, POSTGRES_PASSWORD, and POSTGRES_DB values to the `docker-compose.yml` configuration.
-2. Copy your [`service_account.json`](#google-api-setup) into the credentials folder.
-3. Run `docker-compose up --build` to build and start the Docker containers.
-4. Access Frontend at `http://localhost:3000/`.
+2. Add the POSTGRES_USER, POSTGRES_PASSWORD, and POSTGRES_DB values to the `docker-compose.yml` configuration.
+3. Copy your [`service_account.json`](#google-api-setup) into the credentials folder.
+4. Run `docker-compose up --build` to build and start the Docker containers.
+5. Access Frontend at `http://localhost:3000/`.
 
 ### Frontend
 The `Fetch File List` button is only for seeing the files in the PNG_FOLDER_ID. After clicking on the `Start`, a task starts in the background in the backend service. It processes all the assets in the PNG_FOLDER_ID. The frontend has a polling mechanism that requests the status of the task. If it becomes completed the `Start` buttons will be enabled again for a fresh processing. Otherwise, the user will see the processing is still in progress. It's safe to process the files again and again. You can adjust the chunks of the files to be processed in the `provider.py` file.
