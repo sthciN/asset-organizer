@@ -115,8 +115,8 @@ The project structure is as follows:
 Create a `.env` file within the backend folder with the following variables:
 ```
 PNG_FOLDER_ID: The ID of the folder where the original assets are located.
-DATA_FOLDER_ID: The ID of the folder where the Backup Folder and the data sheet (Vinted Homework.2) are located.
-DATA_SHEET_NAME: The name of the Data sheet (Vinted Homework.2)
+DATA_FOLDER_ID: The ID of the folder where the Backup Folder and the data sheet are located.
+DATA_SHEET_NAME: The name of the Data sheet
 NEW_FOLDER_ID: The ID of the new folder where files will be reorganized.
 LOG_FOLDER_ID: The ID of the folder where logs will be written.
 GOOGLEADS_API_KEY: The API key used for Googleads API.
@@ -153,7 +153,7 @@ The `Fetch File List` button is only for seeing the files in the PNG_FOLDER_ID. 
 - [Google Sheets API](https://console.cloud.google.com/apis/enableflow?apiid=sheets.googleapis.com)
 
 2. Generate Key
-    Create a service account and add the client email to the data sheet (Vinted Homework.2). 
+    Create a service account and add the client email to the data sheet. 
 
 3. Add Creds
     Move the generated key to the credentials folder and rename it to `service_account.json`.
@@ -170,7 +170,7 @@ The `Fetch File List` button is only for seeing the files in the PNG_FOLDER_ID. 
 - File Naming and Asset Management: Instead of asset or asset_id, I used file and file_id across the app for clear and consistent naming.
 - Validations are assumed to be in order. The reason for this is because if the name is not validated, the next step will not be meaningful to be executed. Same with the buyout date which doesn't need to be checked for quality. However, the unique name of the assets will be stored in the log files for future checking and see at what stage it is invalid.
 - The asset names do not relate to ad_id in uac_ads_data. Static but random ad_id is used for budget updates.
-- The `Backup Folder` will be created in the data folder next to the Vinted Homework.2 file.
+- The `Backup Folder` will be created in the data folder next to the data file.
 
 ## Future Improvements
 - Logging Enhancements: Considering a separate threaded logging for improved performance.
